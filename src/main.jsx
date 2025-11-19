@@ -1,86 +1,142 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import '@fortawesome/fontawesome-free/css/all.min.css'
-import App from './App.jsx'
-import photo from './assets/photo.jpg'
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Projects from "./pages/projects";
+import Skills from "./pages/Skills";
+import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
+import Experience from "./pages/Experience";
+import EducationCertification from "./pages/EducationCertification";
+import AdminMessages from "./pages/AdminMessages";
+import { useEffect, useState } from "react";
+import AOS from "aos/dist/aos";
+import "aos/dist/aos.css";
+import "./App.css";
+import photo from './assets/photo.jpg';
+import CVModal from './components/CVModal';
 
-// Create a circular favicon from the profile photo at runtime.
-// This draws the image to a square canvas with a circular clip and sets the link href to a PNG data URL.
-const setFaviconLink = (url, type = 'image/png') => {
-  let link = document.querySelector("link[rel~='icon']");
-  if (!link) {
-    link = document.createElement('link');
-    link.rel = 'icon';
-    document.getElementsByTagName('head')[0].appendChild(link);
-  }
-  link.href = url;
-  link.type = type;
-};
+function Home() {
+  const [showCVModal, setShowCVModal] = useState(false);
 
-try {
-  const makeCircularFavicon = (src) => {
-    const img = new Image();
-    // don't set crossOrigin for local assets served by Vite — can cause CORS/canvas taint issues
-    img.src = src;
-    img.onload = () => {
-      try {
-        const size = 128; // favicon resolution
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, size, size);
-        // draw circular clip
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
+  return (
+    <section className="hero">
+      <div className="hero-shapes" aria-hidden="true">
+        <span className="shape shape-1"></span>
+        <span className="shape shape-2"></span>
+        <span className="shape shape-3"></span>
+      </div>
 
-        // draw image covering the canvas (cover behavior)
-        const ratio = Math.max(size / img.width, size / img.height);
-        const nw = img.width * ratio;
-        const nh = img.height * ratio;
-        const nx = (size - nw) / 2;
-        const ny = (size - nh) / 2;
-        ctx.drawImage(img, nx, ny, nw, nh);
-        ctx.restore();
+      <div className="hero-content hero-layout">
+        <div className="hero-left" data-aos="fade-right">
+          <img src={photo} alt="Profile" className="profile-photo" />
+          <button onClick={() => setShowCVModal(true)} className="btn download-cv" data-aos="fade-up" data-aos-delay="300">
+            <i className="fas fa-download"></i> Download CV
+          </button>
+        </div>
 
-        // optional circular border: draw a faint ring
-        ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-        ctx.stroke();
+        <div className="hero-right" data-aos="fade-left">
+          <h1 data-aos="fade-up">Hi, I'm <span className="highlight">Muhammad Izhar Adrali</span></h1>
+          <p className="subtitle" data-aos="fade-up" data-aos-delay="120">
+            I'm an AI graduate and AI/ML Engineer with experience in machine learning, deep learning, federated learning, NLP, computer vision, and real-world energy forecasting. I also have frontend development experience.
+          </p>
+          
+          <div className="social-cta" data-aos="fade-up" data-aos-delay="180">
+            <a className="social-cta-link" href="mailto:izharadrali@gmail.com">izharadrali@gmail.com</a>
+            <a className="social-cta-link" href="https://github.com/izharadrali" target="_blank" rel="noreferrer">
+              <i className="fab fa-github"></i> GitHub
+            </a>
+            <a className="social-cta-link" href="https://www.linkedin.com/in/muhammadizhar-" target="_blank" rel="noreferrer">
+              <i className="fab fa-linkedin"></i> LinkedIn
+            </a>
+          </div>
 
-        // toDataURL can throw if the canvas is tainted; catch and fallback
-        let url;
-        try {
-          url = canvas.toDataURL('image/png');
-          setFaviconLink(url, 'image/png');
-          return;
-        } catch (err) {
-          // fallback to raw src
-          console.warn('favicon canvas export failed, falling back to raw image', err);
-          setFaviconLink(src, 'image/jpeg');
-        }
-      } catch (err) {
-        console.error('favicon creation error', err);
-        setFaviconLink(src, 'image/jpeg');
-      }
-    };
-    img.onerror = () => setFaviconLink(src, 'image/jpeg');
-  };
+          <Link to="/projects">
+            <button className="btn" data-aos="zoom-in" data-aos-delay="260">View My Work</button>
+          </Link>
+        </div>
+      </div>
 
-  makeCircularFavicon(photo);
-} catch (e) {
-  // if anything fails, fall back to the raw image
-  try { setFaviconLink(photo, 'image/jpeg'); } catch (err) {}
+      <CVModal isOpen={showCVModal} onClose={() => setShowCVModal(false)} />
+    </section>
+  );
 }
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+function App() {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+      offset: 100,
+      easing: 'cubic-bezier(0.2, 0.9, 0.3, 1)'
+    });
+  }, []);
+
+  // Theme toggle: keep a simple 'Nites' button that toggles a light-mode class on <body>
+  const [isLight, setIsLight] = useState(() => {
+    try {
+      return localStorage.getItem('site-theme') === 'light';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (isLight) document.body.classList.add('light-mode');
+    else document.body.classList.remove('light-mode');
+    try { localStorage.setItem('site-theme', isLight ? 'light' : 'dark'); } catch (e) {}
+  }, [isLight]);
+
+  // Navbar scroll - toggle compact/scrolled style
+  useEffect(() => {
+    const header = document.querySelector('.navbar');
+    if (!header) return;
+
+    const onScroll = () => {
+      if (window.scrollY > 20) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <Router>
+      <header className="navbar">
+        <div className="nav-inner">
+          <Link to="/" className="logo">Izhar Adrali</Link>
+          <nav className="nav-links">
+            <Link to="/">Home</Link>
+            <Link to="/projects">Projects</Link>
+            <Link to="/education">Education/Certificatons</Link>
+            <Link to="/experience">Experience</Link>
+            <Link to="/blog">Blog</Link>
+            <Link to="/skills">Skills</Link>
+            <Link to="/contact">Contact</Link>
+          </nav>
+          <button
+            className="btn nites-btn"
+            onClick={() => setIsLight(prev => !prev)}
+            aria-pressed={isLight}
+            aria-label="Toggle Nites theme"
+            title="Toggle Nites"
+          >
+            Nites
+          </button>
+        </div>
+      </header>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/education" element={<EducationCertification />} />
+        <Route path="/experience" element={<Experience />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/skills" element={<Skills />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/admin/messages" element={<AdminMessages />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
