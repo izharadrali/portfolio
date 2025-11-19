@@ -11,8 +11,7 @@ import "aos/dist/aos.css";
 import "./App.css";
 import photo from './assets/photo.jpg';
 import CVModal from './components/CVModal';
-// Import only the components, not the Router wrapper
-import { Routes, Route, Link } from "react-router-dom"; 
+import { Routes, Route, Link } from "react-router-dom";
 
 function Home() {
   const [showCVModal, setShowCVModal] = useState(false);
@@ -28,17 +27,27 @@ function Home() {
       <div className="hero-content hero-layout">
         <div className="hero-left" data-aos="fade-right">
           <img src={photo} alt="Profile" className="profile-photo" />
-          <button onClick={() => setShowCVModal(true)} className="btn download-cv" data-aos="fade-up" data-aos-delay="300">
+          <button 
+            onClick={() => setShowCVModal(true)} 
+            className="btn download-cv"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
             <i className="fas fa-download"></i> Download CV
           </button>
         </div>
 
         <div className="hero-right" data-aos="fade-left">
-          <h1 data-aos="fade-up">Hi, I'm <span className="highlight">Muhammad Izhar Adrali</span></h1>
+          <h1 data-aos="fade-up">
+            Hi, I'm <span className="highlight">Muhammad Izhar Adrali</span>
+          </h1>
+
           <p className="subtitle" data-aos="fade-up" data-aos-delay="120">
-            I'm an AI graduate and AI/ML Engineer with experience in machine learning, deep learning, federated learning, NLP, computer vision, and real-world energy forecasting. I also have frontend development experience.
+            I'm an AI graduate and AI/ML Engineer with experience in machine learning,
+            deep learning, federated learning, NLP, computer vision, and real-world
+            energy forecasting. I also have frontend development experience.
           </p>
-          
+
           <div className="social-cta" data-aos="fade-up" data-aos-delay="180">
             <a className="social-cta-link" href="mailto:izharadrali@gmail.com">izharadrali@gmail.com</a>
             <a className="social-cta-link" href="https://github.com/izharadrali" target="_blank" rel="noreferrer">
@@ -50,7 +59,9 @@ function Home() {
           </div>
 
           <Link to="/projects">
-            <button className="btn" data-aos="zoom-in" data-aos-delay="260">View My Work</button>
+            <button className="btn" data-aos="zoom-in" data-aos-delay="260">
+              View My Work
+            </button>
           </Link>
         </div>
       </div>
@@ -61,6 +72,8 @@ function Home() {
 }
 
 function App() {
+
+  // AOS animation init
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -70,11 +83,11 @@ function App() {
     });
   }, []);
 
-  // Theme toggle: keep a simple 'Nites' button that toggles a light-mode class on <body>
+  // Light/Dark theme toggle
   const [isLight, setIsLight] = useState(() => {
     try {
       return localStorage.getItem('site-theme') === 'light';
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   });
@@ -82,10 +95,10 @@ function App() {
   useEffect(() => {
     if (isLight) document.body.classList.add('light-mode');
     else document.body.classList.remove('light-mode');
-    try { localStorage.setItem('site-theme', isLight ? 'light' : 'dark'); } catch (e) {}
+    localStorage.setItem('site-theme', isLight ? 'light' : 'dark');
   }, [isLight]);
 
-  // Navbar scroll - toggle compact/scrolled style
+  // Navbar scrolled effect
   useEffect(() => {
     const header = document.querySelector('.navbar');
     if (!header) return;
@@ -100,25 +113,58 @@ function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Mobile menu toggle
+  useEffect(() => {
+    const menuBtn = document.getElementById("menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    if (!menuBtn || !mobileMenu) return;
+
+    menuBtn.onclick = () => {
+      mobileMenu.classList.toggle("open");
+    };
+  }, []);
+
   return (
-    // REMOVE THE <Router> WRAPPER HERE, IT'S NOW IN MAIN.JSX
-    <> 
+    <>
+      {/* ★★★★★ Responsive Navbar */}
       <header className="navbar">
         <div className="nav-inner">
+
+          {/* Logo */}
           <Link to="/" className="logo">Izhar Adrali</Link>
-          <nav className="nav-links">
+
+          {/* Desktop Menu */}
+          <nav className="nav-links desktop-menu">
             <Link to="/">Home</Link>
             <Link to="/projects">Projects</Link>
-            <Link to="/education">Education/Certificatons</Link>
+            <Link to="/education">Education/Certifications</Link>
             <Link to="/experience">Experience</Link>
             <Link to="/blog">Blog</Link>
             <Link to="/skills">Skills</Link>
             <Link to="/contact">Contact</Link>
           </nav>
-        
+
+          {/* Mobile Hamburger */}
+          <button id="menu-btn" className="mobile-menu-btn">
+            ☰
+          </button>
+
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        <div id="mobile-menu" className="mobile-menu">
+          <Link to="/" onClick={() => mobileMenu.classList.remove("open")}>Home</Link>
+          <Link to="/projects">Projects</Link>
+          <Link to="/education">Education/Certifications</Link>
+          <Link to="/experience">Experience</Link>
+          <Link to="/blog">Blog</Link>
+          <Link to="/skills">Skills</Link>
+          <Link to="/contact">Contact</Link>
         </div>
       </header>
 
+      {/* ROUTES */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
@@ -129,8 +175,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/messages" element={<AdminMessages />} />
       </Routes>
-    {/* REMOVE THE </Router> WRAPPER HERE, IT'S NOW IN MAIN.JSX */}
-    </> 
+    </>
   );
 }
 
