@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="g3" x1="0" x2="1">
+      <stop offset="0%" stop-color="#60e3a6" />
+      <stop offset="100%" stop-color="#4ad3ff" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g3)" />
+  <g fill="#fff" font-family="Arial, Helvetica, sans-serif">
+    <text x="60" y="120" font-size="48" font-weight="700">Hackathon Weekend</text>
+    <rect x="60" y="160" width="420" height="260" rx="16" fill="rgba(255,255,255,0.08)" />
+  </g>
+</svg>

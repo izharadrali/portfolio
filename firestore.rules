@@ -1,0 +1,30 @@
+// Firestore security rules (example)
+// WARNING: The example below allows unauthenticated clients to create documents
+// in the `messages` collection. This is convenient for quick demos, but is
+// NOT secure for production. Replace with stricter rules before going live.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Messages collection - example development rules
+    match /messages/{messageId} {
+      // Allow anyone to create a message (for demo/dev only)
+      allow create: if true;
+
+      // Restrict reads to authenticated users (customize to your admin setup)
+      allow read: if request.auth != null && request.auth.uid == 'ADMIN_UID';
+
+      // No updates or deletes allowed from client-side by default
+      allow update, delete: if false;
+    }
+  }
+}
+
+/*
+Recommendations for production:
+- Use a callable Cloud Function as a trusted endpoint to write messages,
+  or require users to complete an authentication/recaptcha step before
+  allowing writes directly to Firestore.
+- Limit the fields and size of incoming messages in rules.
+- Monitor and rate-limit writes via server-side logic.
+*/
