@@ -6,7 +6,7 @@ export default defineConfig({
   // CRITICAL FIX: Set the base path to your repository name for GitHub Pages.
   // This ensures all assets (CSS, JS, images) are loaded correctly 
   // and the router understands the starting point.
-  base: '/portpolio/', 
+  base: '/portfolio/', 
   
   plugins: [react()], 
   
